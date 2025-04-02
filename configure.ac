@@ -37,6 +37,7 @@ if ! test "x$ac_cv_type_size_t" = xyes; then
 fi
 
 # Checks for library functions.
+# TODO: switch to using AC_CHECK_FUNC calls and use their ACTION-IF-NOT-FOUND
 AC_CHECK_FUNCS([memset strchr strerror strtol mmap munmap])
 if ! test "x$ac_cv_func_memset" = xyes; then
   AC_MSG_ERROR([memset is required])
