@@ -16,12 +16,15 @@ envelope used by each part of the build of a project, so that
 developers can know and request the right-sized amount of memory for
 their needs, and tune the parallel options of their build to reduce
 the build duration as much as possible without exceeding the available
-memory (and avoid being killed by the Linux OOM killer).
+memory (and avoid being killed by the Linux OOM killer).  Basically,
+our build tool spawns a process-watcher at startup and kills it at
+exit time; it queries it after each possibly-large subjob.
 
-As it identifies a process tree by the PID of the top process, it is
-suitable to identify a particular process tree and not something like
-"all processes that are named gcc on the system", which would be
-problematic if several similar jobs may be running at the same time.
+As process-watcher identifies a process tree by the PID of the top
+process, it is suitable to identify a particular process tree and not
+something like "all processes that are named gcc on the system", which
+would be problematic if several similar jobs may be running at the
+same time.
 
 process-watcher is designed to have a very small disk footprint,
 memory footprint and cpu footprint, which makes its installation and
@@ -62,14 +65,16 @@ https://github.com/ncabatoff/process-exporter (a Prometheus exporter)
 is a Go program that regularly checks the statistics of processes and
 exports them to a Prometheus server.  It cannot measure a specific
 process tree if there are multiple process trees matching your
-matchers, or measuring the memory envelope of a process tree, but is
-useful for getting statistics over a long time.
+matchers, or measuring the memory envelope of a process tree, and
+probably consumes more RAM than process-watcher, but is useful for
+getting statistics over a long time.
 
-https://github.com/astrofrog/psrecord is a Python program that can
-collect memory and CPU stats of a process tree identified by its top
-PID.  It does not compute the envelope memory statistics, and has a
-larger overall footprint as it relies on CPython.  However, it has
-features that process-tree does not have, such as the CPU stats.
+https://github.com/astrofrog/psrecord is a program that can collect
+memory and CPU stats of a process tree identified by its top PID.  It
+does not compute the envelope memory statistics, and has a larger
+overall footprint than process-watcher as it currently relies on
+CPython.  However, it has features that process-tree does not have,
+such as the CPU stats.
 
 Building
 ========
