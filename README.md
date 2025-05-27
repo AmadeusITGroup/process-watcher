@@ -20,6 +20,31 @@ memory (and avoid being killed by the Linux OOM killer).  Basically,
 our build tool spawns a process-watcher at startup and kills it at
 exit time; it queries it after each possibly-large subjob.
 
+    Buildtool    Make#1     Make#2
+        |      (and subprocesses thereof)
+        |
+        |-------->|
+        |         |->|
+        |         |--->|
+        |         |  | |
+        |------------------>|
+        |         |  | |    |
+        |         |<-|-|    |->|
+        |         |  |      |  |
+        |         |  |      |<-|
+        |<------------------|
+        |         |  |
+        |         |<-|
+        |         |
+        |<--------|
+
+    Question: how much memory was needed for make#1?  for make#2?
+    Incidently, what is the maximum parallelization we can do without
+    exceeding the limits of the system memory?
+
+    In the above case, our Buildtool can ask process-watcher about the
+    memory envelope of Make#1 and Make#2 independently.
+
 As process-watcher identifies a process tree by the PID of the top
 process, it is suitable to identify a particular process tree and not
 something like "all processes that are named gcc on the system", which
